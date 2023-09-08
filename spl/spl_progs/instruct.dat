@@ -1,0 +1,14 @@
+load --os $HOME/myexpos/spl/spl_progs/os_startup.xsm
+load --idle $HOME/myexpos/expl/expl_progs/idle.xsm
+load --init $HOME/myexpos/expl/expl_progs/init_16ass.xsm
+load --library $HOME/myexpos/expl/library.lib
+load --int=10 $HOME/myexpos/spl/spl_progs/haltprog.xsm
+load --exhandler $HOME/myexpos/spl/spl_progs/exception.xsm
+load --int=7 $HOME/myexpos/spl/spl_progs/sys_call.xsm
+load --module 7 $HOME/myexpos/spl/spl_progs/BOOT_MODULE.xsm
+load --module 5 $HOME/myexpos/spl/spl_progs/scheduler.xsm
+load --int=timer $HOME/myexpos/spl/spl_progs/timer.xsm
+load --module 4 $HOME/myexpos/spl/spl_progs/device_manager.xsm
+load --module 0 $HOME/myexpos/spl/spl_progs/mod_0.xsm
+load --int=6 $HOME/myexpos/spl/spl_progs/int_6.xsm
+load --int=console $HOME/myexpos/spl/spl_progs/console_int.xsm
