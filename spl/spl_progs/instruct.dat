@@ -1,6 +1,6 @@
 load --os $HOME/myexpos/spl/spl_progs/os_startup.xsm
 load --idle $HOME/myexpos/expl/expl_progs/idle.xsm
-load --init $HOME/myexpos/expl/expl_progs/init_16ass.xsm
+load --init $HOME/myexpos/expl/expl_progs/init.xsm
 load --library $HOME/myexpos/expl/library.lib
 load --int=10 $HOME/myexpos/spl/spl_progs/haltprog.xsm
 load --exhandler $HOME/myexpos/spl/spl_progs/exception.xsm
@@ -12,3 +12,6 @@ load --module 4 $HOME/myexpos/spl/spl_progs/device_manager.xsm
 load --module 0 $HOME/myexpos/spl/spl_progs/mod_0.xsm
 load --int=6 $HOME/myexpos/spl/spl_progs/int_6.xsm
 load --int=console $HOME/myexpos/spl/spl_progs/console_int.xsm
+load --int=9 $HOME/myexpos/spl/spl_progs/exex_sys_call.xsm
+load --module 1 $HOME/myexpos/spl/spl_progs/MOD_1.xsm
+load --module 2 $HOME/myexpos/spl/spl_progs/MOD_2.xsm

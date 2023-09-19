@@ -1,0 +1,92 @@
+alias userSP R1;
+userSP=[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE+1]*16) +13];
+SP=[PROCESS_TABLE +([SYSTEM_STATUS_TABLE+1]*16) +11]*512-1;
+[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE+1]*16) +9]=9;
+backup;
+alias filename R0;
+filename= [[(PTBR+ 2*(userSP-4)/512)]*512 + (userSP-4)%512];
+alias i R10;
+alias currpid R9;
+currpid=[SYSTEM_STATUS_TABLE+1];
+i=0;
+while(i<60) do
+    if([59 +i*16+1]==filename) then
+        break;
+    endif;
+    i=i+1;
+endwhile;
+if(i!=60 && [59 +i*16]==EXEC) then
+    multipush(R1,R2,R10,R9);
+    R1=3;
+    R2=[SYSTEM_STATUS_TABLE+1];
+    call MOD_1;
+    multipop(R1,R2,R10,R9);
+    [MEMORY_FREE_LIST+[PROCESS_TABLE +([SYSTEM_STATUS_TABLE+1]*16) +11]]=[MEMORY_FREE_LIST+[PROCESS_TABLE +([SYSTEM_STATUS_TABLE+1]*16) +11]]+1;
+    [SYSTEM_STATUS_TABLE+2]=[SYSTEM_STATUS_TABLE+2]-1;
+    SP=[PROCESS_TABLE +([SYSTEM_STATUS_TABLE+1]*16) +11]*512-1;
+    [PROCESS_TABLE + currpid*16 +4]=RUNNING;
+    [PROCESS_TABLE +currpid*16 + 7]=i;
+    alias pagetnew R8;
+    pagetnew=[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE+1]*16)+14];
+
+    //library
+    [pagetnew+0]=63;
+    [pagetnew+1]="0100";
+    [pagetnew+2]=64;
+    [pagetnew+3]="0100";
+
+    multipush(R0,R1,R2,R8,R9,R10);
+
+    //heap
+    R1=1;
+    call MOD_2;
+    [pagetnew+4]=R0;
+    [pagetnew+5]="0110";
+
+    R1=1;
+    call MOD_2;
+    [pagetnew+6]=R0;
+    [pagetnew+7]="0110";
+    //stack;
+    R1=1;
+    call MOD_2;
+    [pagetnew+16]=R0;
+    [pagetnew+17]="0110";
+
+    R1=1;
+    call MOD_2;
+    [pagetnew+18]=R0;
+    [pagetnew+19]="0110";
+    multipop(R0,R1,R2,R8,R9,R10);
+    i=8;
+    [pagetnew+8]=-1;
+    [pagetnew+9]="0000";
+    [pagetnew+10]=-1;
+    [pagetnew+11]="0000";
+    [pagetnew+12]=-1;
+    [pagetnew+13]="0000";
+    [pagetnew+14]=-1;
+    [pagetnew+15]="0000";
+    
+    while([59 +[PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1])*16 +7]*16+i]!=-1) do
+         multipush(R0,R1,R2,R8,R9,R10);
+        R1=1;
+
+        call MOD_2;
+        [pagetnew+8+i-8]=R0;
+        [pagetnew+9+i-8]="0100";
+        loadi(R0,[59 +[PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1])*16 +7]*16+i]);
+        multipop(R0,R1,R2,R8,R9,R10);
+        i=i+1;
+    endwhile;
+
+    [[pagetnew+16]*512]=[[pagetnew+8]*512+1];
+
+else
+    [[(PTBR+ 2*(userSP-1)/512)]*512 + (userSP-1)%512]=-1;
+endif;
+restore;
+
+SP=userSP;
+[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE+1]*16) +9]=0;
+ireturn;
