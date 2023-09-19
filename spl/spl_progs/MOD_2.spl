@@ -3,12 +3,12 @@ alias pagenum R2;
 //Get free page
 if(funcnum==1) then
     [SYSTEM_STATUS_TABLE+3]=[SYSTEM_STATUS_TABLE+3]+1;
-    if([SYSTEM_STATUS_TABLE+2]==0) then 
+    while([SYSTEM_STATUS_TABLE+2]==0) do 
         [PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16+4]=WAIT_MEM;
         multipush(R0,R1,R2,R3,R4);
-        call SCHEDULER;
+        call MOD_5;
         multipop(R0,R1,R2,R3,R4);
-    endif;
+    endwhile;
     [SYSTEM_STATUS_TABLE+3]=[SYSTEM_STATUS_TABLE+3]-1;
     [SYSTEM_STATUS_TABLE+2]=[SYSTEM_STATUS_TABLE+2]-1;
     alias i R6;
@@ -25,16 +25,16 @@ if(funcnum==1) then
 endif;
 //Release page
 if(funcnum==2) then
-    [MEMORY_FREE_LIST+pagenum]=[MEMORY_FREE_LIST+pagenum]-1;
-    if([MEMORY_FREE_LIST+pagenum]==0) then
+    [MEMORY_FREE_LIST+pagenum]=0;
+    
         [SYSTEM_STATUS_TABLE+2]=[SYSTEM_STATUS_TABLE+2]+1;
-    endif;
     alias i R6;
     i=0;
     while(i<16) do
         if([PROCESS_TABLE+ i*16 +4]==WAIT_MEM) then
             [PROCESS_TABLE+i*16+4]=READY;
         endif;
+        i=i+1;
     endwhile;
     return;
 endif;

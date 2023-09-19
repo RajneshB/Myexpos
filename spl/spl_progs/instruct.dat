@@ -15,3 +15,4 @@ load --int=console $HOME/myexpos/spl/spl_progs/console_int.xsm
 load --int=9 $HOME/myexpos/spl/spl_progs/exex_sys_call.xsm
 load --module 1 $HOME/myexpos/spl/spl_progs/MOD_1.xsm
 load --module 2 $HOME/myexpos/spl/spl_progs/MOD_2.xsm
+load --exec $HOME/myexpos/expl/expl_progs/odd.xsm

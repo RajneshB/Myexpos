@@ -1,21 +1,23 @@
 alias userSP R1;
-userSP=[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE+1]*16) +13];
+userSP=SP;
+[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE+1]*16) +13]=SP;
 SP=[PROCESS_TABLE +([SYSTEM_STATUS_TABLE+1]*16) +11]*512-1;
 [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE+1]*16) +9]=9;
-backup;
+
 alias filename R0;
 filename= [[(PTBR+ 2*(userSP-4)/512)]*512 + (userSP-4)%512];
 alias i R10;
 alias currpid R9;
 currpid=[SYSTEM_STATUS_TABLE+1];
 i=0;
+// print [INODE_TABLE];
 while(i<60) do
-    if([59 +i*16+1]==filename) then
+    if([INODE_TABLE +i*16+1]==filename) then
         break;
     endif;
     i=i+1;
 endwhile;
-if(i!=60 && [59 +i*16]==EXEC) then
+if(i!=60 && [INODE_TABLE +i*16]==3) then
     multipush(R1,R2,R10,R9);
     R1=3;
     R2=[SYSTEM_STATUS_TABLE+1];
@@ -68,14 +70,14 @@ if(i!=60 && [59 +i*16]==EXEC) then
     [pagetnew+14]=-1;
     [pagetnew+15]="0000";
     
-    while([59 +[PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1])*16 +7]*16+i]!=-1) do
+    while([INODE_TABLE +[PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1])*16 +7]*16+i]!=-1) do
          multipush(R0,R1,R2,R8,R9,R10);
         R1=1;
 
         call MOD_2;
         [pagetnew+8+i-8]=R0;
         [pagetnew+9+i-8]="0100";
-        loadi(R0,[59 +[PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1])*16 +7]*16+i]);
+        loadi(R0,[INODE_TABLE +[PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1])*16 +7]*16+i]);
         multipop(R0,R1,R2,R8,R9,R10);
         i=i+1;
     endwhile;
@@ -83,10 +85,14 @@ if(i!=60 && [59 +i*16]==EXEC) then
     [[pagetnew+16]*512]=[[pagetnew+8]*512+1];
 
 else
+    // print "hello";
     [[(PTBR+ 2*(userSP-1)/512)]*512 + (userSP-1)%512]=-1;
+    SP=userSP;
+    [PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1]*16)+9]=0;
+    ireturn;
 endif;
-restore;
 
-SP=userSP;
+
+SP=8*512;
 [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE+1]*16) +9]=0;
 ireturn;
