@@ -25,9 +25,10 @@ if(funcnum==1) then
 endif;
 //Release page
 if(funcnum==2) then
-    [MEMORY_FREE_LIST+pagenum]=0;
-    
+    [MEMORY_FREE_LIST+pagenum]=[MEMORY_FREE_LIST+pagenum]-1;
+    if([MEMORY_FREE_LIST+pagenum]==0) then
         [SYSTEM_STATUS_TABLE+2]=[SYSTEM_STATUS_TABLE+2]+1;
+    endif;
     alias i R6;
     i=0;
     while(i<16) do

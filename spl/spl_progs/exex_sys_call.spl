@@ -10,14 +10,14 @@ alias i R10;
 alias currpid R9;
 currpid=[SYSTEM_STATUS_TABLE+1];
 i=0;
-// print [INODE_TABLE];
+// print [59*512];
 while(i<60) do
-    if([INODE_TABLE +i*16+1]==filename) then
+    if([59*512 +i*16+1]==filename) then
         break;
     endif;
     i=i+1;
 endwhile;
-if(i!=60 && [INODE_TABLE +i*16]==3) then
+if(i!=60 && [59*512 +i*16]==3) then
     multipush(R1,R2,R10,R9);
     R1=3;
     R2=[SYSTEM_STATUS_TABLE+1];
@@ -25,9 +25,15 @@ if(i!=60 && [INODE_TABLE +i*16]==3) then
     multipop(R1,R2,R10,R9);
     [MEMORY_FREE_LIST+[PROCESS_TABLE +([SYSTEM_STATUS_TABLE+1]*16) +11]]=[MEMORY_FREE_LIST+[PROCESS_TABLE +([SYSTEM_STATUS_TABLE+1]*16) +11]]+1;
     [SYSTEM_STATUS_TABLE+2]=[SYSTEM_STATUS_TABLE+2]-1;
+    
     SP=[PROCESS_TABLE +([SYSTEM_STATUS_TABLE+1]*16) +11]*512-1;
     [PROCESS_TABLE + currpid*16 +4]=RUNNING;
     [PROCESS_TABLE +currpid*16 + 7]=i;
+    i=1;
+    while(i<=16) do
+        [([PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1]*16)+11]+1)*512-i]=-1;
+        i=i+1;
+    endwhile;
     alias pagetnew R8;
     pagetnew=[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE+1]*16)+14];
 
@@ -70,15 +76,20 @@ if(i!=60 && [INODE_TABLE +i*16]==3) then
     [pagetnew+14]=-1;
     [pagetnew+15]="0000";
     
-    while([INODE_TABLE +[PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1])*16 +7]*16+i]!=-1) do
-         multipush(R0,R1,R2,R8,R9,R10);
+    while([59*512 +[PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1])*16 +7]*16+i]!=-1) do
+         multipush(R0,R1,R2,R3,R4,R8,R9,R10);
         R1=1;
 
         call MOD_2;
         [pagetnew+8+i-8]=R0;
         [pagetnew+9+i-8]="0100";
-        loadi(R0,[INODE_TABLE +[PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1])*16 +7]*16+i]);
-        multipop(R0,R1,R2,R8,R9,R10);
+        // loadi(R0,[59*512 +[PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1])*16 +7]*16+i]);
+        R1=2;
+        R2=[SYSTEM_STATUS_TABLE+1];
+        R3=R0;
+        R4=[59*512 +[PROCESS_TABLE+([SYSTEM_STATUS_TABLE+1])*16 +7]*16+i];
+        call MOD_4;
+        multipop(R0,R1,R2,R3,R4,R8,R9,R10);
         i=i+1;
     endwhile;
 
