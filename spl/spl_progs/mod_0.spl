@@ -29,6 +29,7 @@ if(fun_num==9) then
     return ;
     
 endif;
+//aquire disk
 if(fun_num==3) then
     while([DISK_STATUS_TABLE]==1) do 
         [PROCESS_TABLE+curr_id*16+4]=WAIT_DISK;
