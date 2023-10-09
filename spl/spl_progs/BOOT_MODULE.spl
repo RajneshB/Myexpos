@@ -1,3 +1,5 @@
+//disk free list
+loadi(61,2);
 //init
 loadi(65,7);
 loadi(66,8);
@@ -41,11 +43,7 @@ loadi(45,58);
 loadi(50,63);
 loadi(51,64);
 
-//new exec file
-// loadi(83,69);
 
-//prime
-// loadi(86,70);
 
 //module 4
 loadi(40,53);
@@ -102,6 +100,9 @@ PTLR=10;
 [PTBR+17]="0110";
 [PTBR+18]=77;
 [PTBR+19]="0110";
+
+[DISK_MAP_TABLE+10+4]=7;
+[DISK_MAP_TABLE+10+5]=8;
 
 
 //process
